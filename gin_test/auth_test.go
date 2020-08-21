@@ -2,6 +2,7 @@ package gin
 
 import (
 	"encoding/base64"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,11 +12,11 @@ func TestBasicAuthSucceed(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/login", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	accounts := Accounts{"admin": "password"}
-	r.Use(BasicAuth(accounts))
+	r := gin.Default()
+	accounts := gin.Accounts{"admin": "password"}
+	r.Use(gin.BasicAuth(accounts))
 
-	r.GET("/login", func(c *Context) {
+	r.GET("/login", func(c *gin.Context) {
 		c.String(200, "autorized")
 	})
 
@@ -36,11 +37,11 @@ func TestBasicAuth401(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/login", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	accounts := Accounts{"foo": "bar"}
-	r.Use(BasicAuth(accounts))
+	r := gin.Default()
+	accounts := gin.Accounts{"foo": "bar"}
+	r.Use(gin.BasicAuth(accounts))
 
-	r.GET("/login", func(c *Context) {
+	r.GET("/login", func(c *gin.Context) {
 		c.String(200, "autorized")
 	})
 

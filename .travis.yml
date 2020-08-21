@@ -12,8 +12,3 @@ script:
     # Run the unit tests suite
     - go test -v -race ./...
 
-notificaitons:
-    email:
-        recipients: lihongitchina@gmail.com 
-        on_success: change
-        on_failure: always

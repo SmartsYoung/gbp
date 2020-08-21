@@ -14,26 +14,8 @@ import (
 	"time"
 )
 
-type NewsSpider struct {
-	TargetUrl    string
-	TargetSource string
-	MysqlDSN     string
-	InsertStmt   string
-	QueryStmt    string
-	Duration     int
-}
-
-type Paper struct {
-	Title   string
-	ImgAddr string
-	Desc    string
-	Content string
-	Author  string
-	Time    string
-}
-
 var (
-	NewsSpiderList = []interface{}{
+	NewsSpiderList1 = []interface{}{
 		(&NewsSpider{
 			TargetUrl:    "https://news.jin10.com",
 			TargetSource: "金十数据",
@@ -63,8 +45,8 @@ var (
 
 func main() {
 	var wg sync.WaitGroup
-	wg.Add(len(NewsSpiderList))
-	for _, Func := range NewsSpiderList {
+	wg.Add(len(NewsSpiderList1))
+	for _, Func := range NewsSpiderList1 {
 		go Call(Func, &wg)
 	}
 	wg.Wait()
@@ -118,8 +100,8 @@ func (ns *NewsSpider) wsliveNewsSpider() {
 			for _, paper := range result_list {
 
 				// mysql 查询
-				if isExist, err := ns.fetchRow(db, paper.(map[string]interface{})["contentText"].(string)); nil == err && !isExist {
-					ns.insert(db, paper.(map[string]interface{})["contentText"].(string), paper.(map[string]interface{})["createdAt"].(string))
+				if isExist, err := ns.fetchRow1(db, paper.(map[string]interface{})["contentText"].(string)); nil == err && !isExist {
+					ns.insert1(db, paper.(map[string]interface{})["contentText"].(string), paper.(map[string]interface{})["createdAt"].(string))
 				}
 			}
 		}
@@ -129,14 +111,14 @@ func (ns *NewsSpider) WSRun(wg *sync.WaitGroup) {}
 func (ns *NewsSpider) Jin10Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 	ticker := time.NewTicker(time.Duration(ns.Duration) * time.Minute)
-	ns.newsSpider()
+	ns.newsSpider1()
 	for range ticker.C {
-		ns.newsSpider()
+		ns.newsSpider1()
 	}
 }
 
 // 新闻爬虫
-func (ns *NewsSpider) newsSpider() {
+func (ns *NewsSpider) newsSpider1() {
 	// mysql 初始化
 	db, err := sql.Open("mysql", ns.MysqlDSN)
 	if nil != err {
@@ -199,14 +181,14 @@ func (ns *NewsSpider) newsSpider() {
 		paper.Time = dom.Find(".jin-meta p").Eq(2).Text() + " " + s.Find(".jin-newsList__time").Text() // 发布日期
 
 		// mysql 查询
-		if isExist, err := ns.fetchRow(db, paper.Title); nil == err && !isExist {
-			ns.insert(db, paper.Title, paper.ImgAddr, paper.Desc, paper.Content, ns.TargetSource, paper.Author, paper.Time)
+		if isExist, err := ns.fetchRow1(db, paper.Title); nil == err && !isExist {
+			ns.insert1(db, paper.Title, paper.ImgAddr, paper.Desc, paper.Content, ns.TargetSource, paper.Author, paper.Time)
 		}
 	})
 }
 
 //插入
-func (ns *NewsSpider) insert(db *sql.DB, args ...interface{}) (int64, error) {
+func (ns *NewsSpider) insert1(db *sql.DB, args ...interface{}) (int64, error) {
 	stmtIns, err := db.Prepare(ns.InsertStmt)
 	if err != nil {
 		return 0, err
@@ -221,7 +203,7 @@ func (ns *NewsSpider) insert(db *sql.DB, args ...interface{}) (int64, error) {
 }
 
 //取一行数据，
-func (ns *NewsSpider) fetchRow(db *sql.DB, args ...interface{}) (isExist bool, err error) {
+func (ns *NewsSpider) fetchRow1(db *sql.DB, args ...interface{}) (isExist bool, err error) {
 	stmtOut, err := db.Prepare(ns.QueryStmt)
 	if err != nil {
 		return

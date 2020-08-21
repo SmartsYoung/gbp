@@ -3,6 +3,7 @@ package gin
 import (
 	"bytes"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
@@ -15,8 +16,8 @@ func TestContextParamsByName(t *testing.T) {
 	w := httptest.NewRecorder()
 	name := ""
 
-	r := Default()
-	r.GET("/test/:name", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test/:name", func(c *gin.Context) {
 		name = c.Params.ByName("name")
 	})
 
@@ -33,8 +34,8 @@ func TestContextSetGet(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	r.GET("/test", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test", func(c *gin.Context) {
 		// Key should be lazily created
 		if c.Keys != nil {
 			t.Error("Keys should be nil")
@@ -43,8 +44,8 @@ func TestContextSetGet(t *testing.T) {
 		// Set
 		c.Set("foo", "bar")
 
-		v, err := c.Get("foo")
-		if err != nil {
+		v, ok := c.Get("foo")
+		if !ok {
 			t.Errorf("Error on exist key")
 		}
 		if v != "bar" {
@@ -61,8 +62,8 @@ func TestContextJSON(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	r.GET("/test", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test", func(c *gin.Context) {
 		c.JSON(200, H{"foo": "bar"})
 	})
 
@@ -83,13 +84,13 @@ func TestContextHTML(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	templ, _ := template.New("t").Parse(`Hello {{.Name}}`)
 	r.SetHTMLTemplate(templ)
 
 	type TestData struct{ Name string }
 
-	r.GET("/test", func(c *Context) {
+	r.GET("/test", func(c *gin.Context) {
 		c.HTML(200, "t", TestData{"alexandernyquist"})
 	})
 
@@ -110,8 +111,8 @@ func TestContextString(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	r.GET("/test", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test", func(c *gin.Context) {
 		c.String(200, "test")
 	})
 
@@ -132,8 +133,8 @@ func TestContextXML(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/test", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	r.GET("/test", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test", func(c *gin.Context) {
 		c.XML(200, H{"foo": "bar"})
 	})
 
@@ -154,8 +155,8 @@ func TestContextData(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/test/csv", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	r.GET("/test/csv", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test/csv", func(c *gin.Context) {
 		c.Data(200, "text/csv", []byte(`foo,bar`))
 	})
 
@@ -174,8 +175,8 @@ func TestContextFile(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/test/file", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	r.GET("/test/file", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test/file", func(c *gin.Context) {
 		c.File("./gin.go")
 	})
 
@@ -198,7 +199,7 @@ func TestHandlerFunc(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	var stepsPassed int = 0
 
 	r.Use(func(context *Context) {
@@ -224,7 +225,7 @@ func TestBadAbortHandlersChain(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	var stepsPassed int = 0
 
 	r.Use(func(context *Context) {
@@ -259,7 +260,7 @@ func TestAbortHandlersChain(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	var stepsPassed int = 0
 
 	r.Use(func(context *Context) {
@@ -291,7 +292,7 @@ func TestFailHandlersChain(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	var stepsPassed int = 0
 
 	r.Use(func(context *Context) {
@@ -322,8 +323,8 @@ func TestBindingJSON(t *testing.T) {
 
 	body := bytes.NewBuffer([]byte("{\"foo\":\"bar\"}"))
 
-	r := Default()
-	r.POST("/binding/json", func(c *Context) {
+	r := gin.Default()
+	r.POST("/binding/json", func(c *gin.Context) {
 		var body struct {
 			Foo string `json:"foo"`
 		}
@@ -355,8 +356,8 @@ func TestBindingJSONEncoding(t *testing.T) {
 
 	body := bytes.NewBuffer([]byte("{\"foo\":\"嘉\"}"))
 
-	r := Default()
-	r.POST("/binding/json", func(c *Context) {
+	r := gin.Default()
+	r.POST("/binding/json", func(c *gin.Context) {
 		var body struct {
 			Foo string `json:"foo"`
 		}
@@ -388,8 +389,8 @@ func TestBindingJSONNoContentType(t *testing.T) {
 
 	body := bytes.NewBuffer([]byte("{\"foo\":\"bar\"}"))
 
-	r := Default()
-	r.POST("/binding/json", func(c *Context) {
+	r := gin.Default()
+	r.POST("/binding/json", func(c *gin.Context) {
 		var body struct {
 			Foo string `json:"foo"`
 		}
@@ -421,8 +422,8 @@ func TestBindingJSONMalformed(t *testing.T) {
 
 	body := bytes.NewBuffer([]byte("\"foo\":\"bar\"\n"))
 
-	r := Default()
-	r.POST("/binding/json", func(c *Context) {
+	r := gin.Default()
+	r.POST("/binding/json", func(c *gin.Context) {
 		var body struct {
 			Foo string `json:"foo"`
 		}

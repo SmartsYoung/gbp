@@ -8,7 +8,7 @@ import (
 
 func main() {
 	data := []byte("golang")
-	b := flush(data)
+	b := flush2(data)
 	r, _ := gzip.NewReader(b)
 	defer r.Close()
 	rawData, err := ioutil.ReadAll(r)
@@ -18,7 +18,7 @@ func main() {
 	}
 }
 
-func flush(data []byte) *bytes.Buffer {
+func flush2(data []byte) *bytes.Buffer {
 	var b bytes.Buffer
 	w := gzip.NewWriter(&b)
 	defer w.Close()

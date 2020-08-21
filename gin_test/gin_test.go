@@ -1,6 +1,7 @@
 package gin
 
 import (
+	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -16,8 +17,8 @@ func TestRouterGroupGETRouteOK(t *testing.T) {
 	w := httptest.NewRecorder()
 	passed := false
 
-	r := Default()
-	r.GET("/test", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test", func(c *gin.Context) {
 		passed = true
 	})
 
@@ -38,8 +39,8 @@ func TestRouterGroupGETNoRootExistsRouteOK(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
-	r.GET("/test", func(c *Context) {
+	r := gin.Default()
+	r.GET("/test", func(c *gin.Context) {
 	})
 
 	r.ServeHTTP(w, req)
@@ -56,8 +57,8 @@ func TestRouterGroupPOSTRouteOK(t *testing.T) {
 	w := httptest.NewRecorder()
 	passed := false
 
-	r := Default()
-	r.POST("/test", func(c *Context) {
+	r := gin.Default()
+	r.POST("/test", func(c *gin.Context) {
 		passed = true
 	})
 
@@ -78,8 +79,8 @@ func TestRouterGroupDELETERouteOK(t *testing.T) {
 	w := httptest.NewRecorder()
 	passed := false
 
-	r := Default()
-	r.DELETE("/test", func(c *Context) {
+	r := gin.Default()
+	r.DELETE("/test", func(c *gin.Context) {
 		passed = true
 	})
 
@@ -100,8 +101,8 @@ func TestRouterGroupPATCHRouteOK(t *testing.T) {
 	w := httptest.NewRecorder()
 	passed := false
 
-	r := Default()
-	r.PATCH("/test", func(c *Context) {
+	r := gin.Default()
+	r.PATCH("/test", func(c *gin.Context) {
 		passed = true
 	})
 
@@ -122,8 +123,8 @@ func TestRouterGroupPUTRouteOK(t *testing.T) {
 	w := httptest.NewRecorder()
 	passed := false
 
-	r := Default()
-	r.PUT("/test", func(c *Context) {
+	r := gin.Default()
+	r.PUT("/test", func(c *gin.Context) {
 		passed = true
 	})
 
@@ -144,8 +145,8 @@ func TestRouterGroupOPTIONSRouteOK(t *testing.T) {
 	w := httptest.NewRecorder()
 	passed := false
 
-	r := Default()
-	r.OPTIONS("/test", func(c *Context) {
+	r := gin.Default()
+	r.OPTIONS("/test", func(c *gin.Context) {
 		passed = true
 	})
 
@@ -166,8 +167,8 @@ func TestRouterGroupHEADRouteOK(t *testing.T) {
 	w := httptest.NewRecorder()
 	passed := false
 
-	r := Default()
-	r.HEAD("/test", func(c *Context) {
+	r := gin.Default()
+	r.HEAD("/test", func(c *gin.Context) {
 		passed = true
 	})
 
@@ -187,7 +188,7 @@ func TestEngine404(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusNotFound {
@@ -215,7 +216,7 @@ func TestHandleStaticFile(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	r.Static("./", testRoot)
 
 	r.ServeHTTP(w, req)
@@ -240,7 +241,7 @@ func TestHandleStaticDir(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	r.Static("/", "./")
 
 	r.ServeHTTP(w, req)
@@ -271,7 +272,7 @@ func TestHandleHeadToDir(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	r := Default()
+	r := gin.Default()
 	r.Static("/", "./")
 
 	r.ServeHTTP(w, req)

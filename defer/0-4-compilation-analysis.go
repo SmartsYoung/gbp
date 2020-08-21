@@ -3,11 +3,11 @@ package main
 import "fmt"
 
 func main() {
-	i := a()
+	i := a1()
 	fmt.Println(i)
 }
 
-func a() int {
+func a1() int {
 	var i int
 	defer func() {
 		i++

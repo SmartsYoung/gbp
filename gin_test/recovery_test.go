@@ -2,6 +2,7 @@ package gin
 
 import (
 	"bytes"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -17,8 +18,8 @@ func TestPanicInHandler(t *testing.T) {
 	// Disable panic logs for testing
 	log.SetOutput(bytes.NewBuffer(nil))
 
-	r := Default()
-	r.GET("/recovery", func(_ *Context) {
+	r := gin.Default()
+	r.GET("/recovery", func(_ *gin.Context) {
 		panic("Oupps, Houston, we have a problem")
 	})
 
@@ -51,8 +52,8 @@ func TestPanicWithAbort(t *testing.T) {
 	// Disable panic logs for testing
 	log.SetOutput(bytes.NewBuffer(nil))
 
-	r := Default()
-	r.GET("/recovery", func(c *Context) {
+	r := gin.Default()
+	r.GET("/recovery", func(c *gin.Context) {
 		c.Abort(400)
 		panic("Oupps, Houston, we have a problem")
 	})
